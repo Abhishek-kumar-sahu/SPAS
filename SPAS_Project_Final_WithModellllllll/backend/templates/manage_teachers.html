@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Teachers | SPAS Admin</title>
+  <style>
+    body {
+      background-color: #0b0b0b;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 40px;
+    }
+
+    header {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #00ffff;
+      text-shadow: 0 0 15px #00ffff;
+      margin-bottom: 30px;
+    }
+
+    .logout-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: linear-gradient(90deg, #ff0055, #ff00cc);
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: 0.3s ease-in-out;
+      box-shadow: 0 0 12px #ff00cc80;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(90deg, #ff00cc, #ff0055);
+      box-shadow: 0 0 20px #ff00cc;
+      transform: scale(1.05);
+    }
+
+    table {
+      width: 95%;
+      max-width: 1000px;
+      margin: auto;
+      border-collapse: collapse;
+      background: rgba(15, 15, 15, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 0 25px #00ffff40;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid #00ffff30;
+    }
+
+    th {
+      color: #00ffff;
+      background: linear-gradient(90deg, #001818, #002424);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    tr:hover {
+      background: #001a1a;
+    }
+
+    .remove-btn {
+      background: transparent;
+      color: #ff4d4d;
+      border: 1px solid #ff4d4d;
+      padding: 6px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 500;
+    }
+
+    .remove-btn:hover {
+      background: #ff4d4d;
+      color: #000;
+      box-shadow: 0 0 12px #ff4d4d, 0 0 20px #ff0000;
+    }
+
+    .back {
+      display: inline-block;
+      color: #00ffff;
+      text-decoration: none;
+      margin-top: 25px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .back:hover {
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .dimmed {
+      filter: blur(4px);
+      opacity: 0.6;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-box {
+      background: #0b0b0b;
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff80;
+      color: #00ffff;
+      padding: 30px 50px;
+      border-radius: 14px;
+      text-align: center;
+      animation: fadeSlide 0.3s ease-out forwards;
+      font-size: 1.1em;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(30px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .popup-btn {
+      background: transparent;
+      color: #00ffff;
+      border: 1px solid #00ffff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      margin: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .popup-btn:hover {
+      background: #00ffff;
+      color: #000;
+      box-shadow: 0 0 15px #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>👩‍🏫 Manage Teachers</h1>
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+  </header>
+
+  <div id="content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% set cat, msg = messages[0] %}
+        <div id="flash-data" data-message="{{ msg|e }}"></div>
+      {% else %}
+        <div id="flash-data" style="display:none;" data-message=""></div>
+      {% endif %}
+    {% endwith %}
+
+    <table>
+      <tr>
+        <th>Teacher ID</th>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Email</th>
+        <th>Position</th>
+        <th>Action</th>
+      </tr>
+
+      {% for teacher in teachers %}
+      <tr>
+        <td>{{ teacher.teacher_id }}</td>
+        <td>{{ teacher.name }}</td>
+        <td>{{ teacher.department }}</td>
+        <td>{{ teacher.email }}</td>
+        <td>{{ teacher.position }}</td>
+        <td>
+          <form id="deleteForm-{{ teacher.id }}" method="POST" action="{{ url_for('delete_teacher', teacher_id=teacher.id) }}">
+            <button type="button" class="remove-btn" onclick="showConfirm('{{ teacher.id }}', '{{ teacher.name }}')">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6">No teachers added yet.</td></tr>
+      {% endfor %}
+    </table>
+
+    <a href="{{ url_for('create_teacher') }}" class="back">➕ Create New Teacher</a><br>
+    <a href="{{ url_for('admin_dashboard') }}" class="back">⬅ Back to Dashboard</a>
+  </div>
+
+  <!-- ✅ Confirmation Popup -->
+  <div id="confirm-popup" class="overlay">
+    <div class="popup-box">
+      <p id="confirm-text">Are you sure you want to remove this teacher?</p>
+      <button id="confirm-yes" class="popup-btn">Yes</button>
+      <button id="confirm-no" class="popup-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ✅ Success Popup -->
+  <div id="success-popup" class="overlay">
+    <div class="popup-box">
+      ✅ Teacher removed successfully!
+    </div>
+  </div>
+
+  <script>
+    let currentTeacherId = null;
+    function showConfirm(id, name) {
+      currentTeacherId = id;
+      document.getElementById("confirm-text").textContent = `Are you sure you want to remove teacher ${name}?`;
+      document.getElementById("confirm-popup").style.display = "flex";
+      document.getElementById("content").classList.add("dimmed");
+    }
+
+    document.getElementById("confirm-yes").onclick = function() {
+      if (currentTeacherId) {
+        document.getElementById(`deleteForm-${currentTeacherId}`).submit();
+      }
+    };
+
+    document.getElementById("confirm-no").onclick = function() {
+      document.getElementById("confirm-popup").style.display = "none";
+      document.getElementById("content").classList.remove("dimmed");
+    };
+
+    window.onload = function() {
+      const flashData = document.getElementById('flash-data');
+      const msg = flashData ? flashData.getAttribute('data-message') : '';
+      if (msg && msg.toLowerCase().includes('teacher') && msg.toLowerCase().includes('removed')) {
+        const popup = document.getElementById('success-popup');
+        const content = document.getElementById('content');
+        content.classList.add('dimmed');
+        popup.style.display = 'flex';
+        setTimeout(() => {
+          popup.style.display = 'none';
+          content.classList.remove('dimmed');
+        }, 2000);
+      }
+    }
+  </script>
+</body>
+</html>

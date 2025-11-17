@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | SPAS</title>
+  <style>
+    /* ===== GLOBAL ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #050505;
+      color: #00ffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(90deg, #001a1a, #003030);
+      padding: 25px 0;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 0 25px #00ffff70;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffffa0;
+      letter-spacing: 1px;
+      animation: pulseTitle 3s infinite ease-in-out;
+    }
+
+    @keyframes pulseTitle {
+      0%, 100% { text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff80; }
+      50% { text-shadow: 0 0 35px #00ffff, 0 0 70px #00ffffc0; }
+    }
+
+    /* ===== LOGOUT BUTTON ===== */
+    .logout-btn {
+      position: absolute;
+      right: 30px;
+      top: 22px;
+      background: linear-gradient(90deg, #ff0055, #ff00cc);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 500;
+      font-size: 0.9em;
+      text-decoration: none;
+      transition: 0.3s ease;
+      box-shadow: 0 0 12px #ff00cc80;
+    }
+
+    .logout-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #ff00cc, #ff0055);
+      box-shadow: 0 0 20px #ff00cc;
+    }
+
+    /* ===== DASHBOARD GRID ===== */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 60px 10%;
+      flex-grow: 1;
+    }
+
+    .card {
+      background: rgba(0, 20, 20, 0.85);
+      border: 2px solid #00ffff;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #00ffff60;
+      padding: 25px;
+      text-align: center;
+      transition: 0.3s ease-in-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 180deg at 50% 50%, #00ffff30, transparent 50%);
+      animation: rotate 6s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+
+    .card h2, .card p {
+      position: relative;
+      z-index: 2;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px #00ffff;
+    }
+
+    .card h2 {
+      font-size: 1.4em;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+    }
+
+    .card p {
+      font-size: 1.3em;
+      color: #ffffff;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn-container {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin: 10px;
+      padding: 12px 30px;
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      background: transparent;
+      color: #00ffff;
+      text-decoration: none;
+      font-size: 1.1em;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px #00ffff70;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      background: #00ffff;
+      color: #000;
+      transform: translateY(-3px);
+      box-shadow: 0 0 25px #00ffff;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: #001a1a;
+      color: #00ffff;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9em;
+      border-top: 1px solid #00ffff30;
+      letter-spacing: 0.5px;
+      box-shadow: 0 -5px 15px #00ffff20;
+    }
+
+    footer span {
+      color: #fff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>⚡ Admin Dashboard ⚡</h1>
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+  </header>
+
+  <section class="dashboard-container">
+    <div class="card">
+      <h2>Total Students</h2>
+      <p>{{ total_students }}</p>
+    </div>
+
+    <div class="card">
+      <h2>Total Teachers</h2>
+      <p>{{ total_teachers }}</p>
+    </div>
+
+    <div class="card">
+      <h2>Average Marks</h2>
+      <p>{{ avg_marks }}</p>
+    </div>
+
+    <div class="card">
+      <h2>Average Attendance</h2>
+      <p>{{ avg_attendance }}%</p>
+    </div>
+  </section>
+
+  <div class="btn-container">
+  <a href="{{ url_for('manage_teachers') }}" class="btn">👩‍🏫 Manage Teachers</a>
+  <a href="/upload" class="btn">📁 Upload Data</a>
+  <a href="/dashboard" class="btn">📊 View Reports</a>
+</div>
+
+
+  <footer>
+    © 2025 <span>SPAS</span> | Smart Performance Analysis System
+  </footer>
+
+</body>
+</html>
